@@ -1,0 +1,15 @@
+
+
+li.ant-list-item[data-template] {
+  display: none;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+input[readonly] {
+  color: gray;
+}
