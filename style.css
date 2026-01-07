@@ -1,4 +1,25 @@
 
+body {
+    background-color: #141414;
+    color: #ffffff;
+}
+
+.delete-task {
+    color: #ff4d4f;
+}
+
+.delete-task:hover {
+    color: #ff7875;
+}
+
+.overdue {
+    background-color: #ff4d4f !important;
+    color: white !important;
+}
+
+.overdue input {
+    color: white !important;
+}
 
 li.ant-list-item[data-template] {
   display: none;

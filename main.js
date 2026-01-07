@@ -1,8 +1,3 @@
-// Todo List App with Server Integration
-// This app allows users to create accounts, log in, and manage tasks (add, edit, delete, mark as done) stored on a remote server.
-// API: https://demo2.z-bit.ee/
-// Features: Authentication, task CRUD, error handling, UI feedback.
-
 // API configuration
 const API_BASE = 'https://demo2.z-bit.ee/'; // Base URL for the REST API
 
@@ -241,6 +236,10 @@ function createTaskRow(task) {
         name.style.color = 'gray'; // Gray color for placeholder
     }
 
+    const deadline = taskRow.querySelector("[name='deadline']"); // Deadline input
+    deadline.value = task.desc || ''; // Set deadline from desc
+    deadline.dataset.oldDeadline = task.desc || ''; // Store original deadline
+
     const checkbox = taskRow.querySelector("[name='completed']"); // Completion checkbox
     checkbox.checked = task.marked_as_done; // Set checked state
 
@@ -260,18 +259,43 @@ function createTaskRow(task) {
         }
     });
 
+    deadline.addEventListener('blur', () => { // Update deadline on blur
+        const newDeadline = deadline.value;
+        if (newDeadline !== deadline.dataset.oldDeadline) {
+            updateTask(task.id, { desc: newDeadline }); // Send update to desc
+            deadline.dataset.oldDeadline = newDeadline; // Update stored deadline
+            // Update overdue status
+            if (newDeadline && new Date(newDeadline) < new Date() && !checkbox.checked) {
+                taskRow.classList.add('overdue');
+            } else {
+                taskRow.classList.remove('overdue');
+            }
+        }
+    });
+
     name.addEventListener('focus', () => { // Handle focus for new tasks
         if (name.readOnly) {
             name.readOnly = false; // Make editable
             name.value = ''; // Clear placeholder
-            name.style.color = 'black'; // Change color
+            name.style.color = 'white'; // Change color for dark theme
             name.dataset.oldTitle = ''; // Reset old title
         }
     });
 
     checkbox.addEventListener('change', () => { // Update completion
         updateTask(task.id, { marked_as_done: checkbox.checked });
+        // Update overdue status
+        if (checkbox.checked) {
+            taskRow.classList.remove('overdue');
+        } else if (deadline.value && new Date(deadline.value) < new Date()) {
+            taskRow.classList.add('overdue');
+        }
     });
+
+    // Check if overdue
+    if (deadline.value && new Date(deadline.value) < new Date() && !checkbox.checked) {
+        taskRow.classList.add('overdue');
+    }
 
     // Style checkboxes
     hydrateAntCheckboxes(taskRow);
